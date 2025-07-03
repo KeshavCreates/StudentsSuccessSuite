@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Compass v3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
+            background-color: #f0f4f8;
+            overflow-x: hidden;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .font-montserrat {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.5s ease-in-out;
+        }
+
+        .form-input, .form-select {
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus, .form-select:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            background-color: #fff;
+        }
+
+        .primary-button {
+            background: linear-gradient(90deg, #6366f1, #4f46e5);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
+        }
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+        }
+        
+        .secondary-button {
+            background-color: #eef2ff;
+            color: #4338ca;
+            transition: all 0.2s ease-in-out;
+        }
+        .secondary-button:hover:not(:disabled) {
+             background-color: #e0e7ff;
+        }
+        .secondary-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .results-grid {
+             display: grid;
+             grid-template-columns: 1fr;
+             gap: 2rem;
+        }
+        
+        .career-result-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .career-result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        .loader-container {
+            min-height: 150px;
+        }
+        .small-loader {
+            width: 2rem; height: 2rem;
+            border: 3px solid #e0e7ff;
+            border-top-color: #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="main-container min-h-screen flex flex-col items-center p-4 sm:p-6 md:p-8">
+        
+        <div id="input-screen" class="w-full max-w-3xl mt-8">
+            <div class="form-card p-8 rounded-2xl shadow-2xl">
+                <h1 class="font-montserrat text-3xl md:text-4xl text-center font-bold text-gray-800 mb-2">Career Compass</h1>
+                <p class="text-center text-gray-600 mb-8">Chart your course to a fulfilling, future-proof career.</p>
+                <form id="career-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="subjects" class="block text-md font-semibold text-gray-700 mb-2">Subjects I Enjoy</label>
+                            <input type="text" id="subjects" required class="form-input w-full p-3 rounded-lg text-md" placeholder="e.g., Computer Science, Art">
+                        </div>
+                         <div>
+                            <label for="skills" class="block text-md font-semibold text-gray-700 mb-2">My Skills & Strengths</label>
+                            <input type="text" id="skills" required class="form-input w-full p-3 rounded-lg text-md" placeholder="e.g., Logical Thinking, Design">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="work-style" class="block text-md font-semibold text-gray-700 mb-2">Work Style</label>
+                            <select id="work-style" class="form-select w-full p-3 rounded-lg">
+                                <option>I prefer working in a team</option>
+                                <option>I prefer working alone</option>
+                                <option>I like a mix of both</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="work-environment" class="block text-md font-semibold text-gray-700 mb-2">Work Environment</label>
+                            <select id="work-environment" class="form-select w-full p-3 rounded-lg">
+                                <option>Office</option>
+                                <option>Remote / Work from home</option>
+                                <option>Hybrid (Office & Remote)</option>
+                                <option>Hands-on / Field work</option>
+                            </select>
+                        </div>
+                    </div>
+                     <div>
+                        <label for="tech-interest" class="block text-md font-semibold text-gray-700 mb-2">Interest in Emerging Tech (AI, etc.)</label>
+                        <select id="tech-interest" class="form-select w-full p-3 rounded-lg">
+                            <option>High - I want to work directly with it</option>
+                            <option>Medium - I'm interested but not an expert</option>
+                            <option>Low - I prefer non-tech focused roles</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="primary-button w-full p-3 rounded-lg font-bold text-white text-lg">
+                        Discover My Path
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="loading-screen" class="hidden text-center mt-20">
+            <div class="flex justify-center items-center">
+                 <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            </div>
+            <p class="font-montserrat text-xl text-gray-700 mt-6">Analyzing future pathways...</p>
+        </div>
+
+        <div id="results-screen" class="hidden w-full max-w-4xl mt-8">
+             <div class="text-center mb-8">
+                <h1 class="font-montserrat text-3xl md:text-4xl font-bold text-gray-800">Your Future-Proof Career Paths</h1>
+                <p class="text-gray-600 text-lg">Here are modern careers that align with your profile.</p>
+             </div>
+             <div id="results-container" class="results-grid">
+             </div>
+             <button id="reset-button" class="bg-white border border-gray-300 hover:bg-gray-100 w-full md:w-auto mt-12 p-3 px-8 rounded-lg font-bold text-lg text-gray-700 mx-auto block shadow-sm">
+                Start Over
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- Interactive Particle Background (same as before) ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 150 };
+        window.addEventListener('mousemove', event => { mouse.x = event.x; mouse.y = event.y; });
+        window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
+        class Particle { constructor(x, y, dX, dY, s, c) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=s; this.color=c; } draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false); ctx.fillStyle=this.color; ctx.fill(); } update() { if(this.x>canvas.width||this.x<0){this.directionX=-this.directionX;} if(this.y>canvas.height||this.y<0){this.directionY=-this.directionY;} let dx=mouse.x-this.x; let dy=mouse.y-this.y; let dist=Math.sqrt(dx*dx+dy*dy); if(dist<mouse.radius+this.size){if(mouse.x<this.x&&this.x<canvas.width-this.size*10){this.x+=5;} if(mouse.x>this.x&&this.x>this.size*10){this.x-=5;} if(mouse.y<this.y&&this.y<canvas.height-this.size*10){this.y+=5;} if(mouse.y>this.y&&this.y>this.size*10){this.y-=5;}} this.x+=this.directionX; this.y+=this.directionY; this.draw();}}
+        function initParticles() { particles = []; let num = (canvas.height * canvas.width) / 9000; for (let i=0; i<num; i++) { let s=(Math.random()*3)+1; let x=(Math.random()*((innerWidth-s*2)-(s*2))+s*2); let y=(Math.random()*((innerHeight-s*2)-(s*2))+s*2); let dX=(Math.random()*.4)-.2; let dY=(Math.random()*.4)-.2; particles.push(new Particle(x,y,dX,dY,s,'rgba(79,70,229,0.2)'));}}
+        function animateBg() { requestAnimationFrame(animateBg); ctx.clearRect(0,0,innerWidth,innerHeight); for (let i=0; i<particles.length; i++) { particles[i].update(); }}
+        function resizeCanvas() { canvas.width=window.innerWidth; canvas.height=window.innerHeight; mouse.radius=(canvas.height/80)*(canvas.width/80); initParticles();}
+        window.addEventListener('resize', resizeCanvas); resizeCanvas(); animateBg();
+        
+        // --- App Logic ---
+        const form = document.getElementById('career-form');
+        const inputScreen = document.getElementById('input-screen');
+        const loadingScreen = document.getElementById('loading-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const resultsContainer = document.getElementById('results-container');
+        const resetButton = document.getElementById('reset-button');
+        let initialData = {};
+
+        form.addEventListener('submit', handleFormSubmit);
+        resetButton.addEventListener('click', resetView);
+        
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            initialData = {
+                subjects: document.getElementById('subjects').value.trim(),
+                skills: document.getElementById('skills').value.trim(),
+                workStyle: document.getElementById('work-style').value,
+                workEnv: document.getElementById('work-environment').value,
+                techInterest: document.getElementById('tech-interest').value,
+            };
+
+            if (!initialData.subjects || !initialData.skills) { alert('Please fill in the "Subjects" and "Skills" fields.'); return; }
+
+            inputScreen.style.display = 'none'; loadingScreen.style.display = 'block';
+
+            try {
+                const currentDate = new Date().toISOString().slice(0, 10);
+                let prompt = `Act as a futurist career counselor for the current date, ${currentDate}. Generate 3 modern, future-proof career paths based on this detailed user profile:
+                - Subjects Enjoyed: "${initialData.subjects}"
+                - Skills & Strengths: "${initialData.skills}"
+                - Preferred Work Style: "${initialData.workStyle}"
+                - Preferred Environment: "${initialData.workEnv}"
+                - Interest in Emerging Tech/AI: "${initialData.techInterest}"
+
+                For each career, provide a detailed analysis. Respond ONLY with a valid JSON object with a key "careers", which is an array of objects. Each object MUST have these exact keys and data types:
+                - "careerTitle": (String)
+                - "description": (String, one sentence)
+                - "whyItFits": (String, paragraph, referencing the user's profile)
+                - "dayInTheLife": (String, paragraph)
+                - "futureOutlook": (String, paragraph about growth and trends)
+                - "averageSalaryRange": (String, e.g., "$70,000 - $110,000 USD")
+                - "requiredEducation": (String)
+                - "keySkills": (Array of strings)
+                Do not include markdown or any text outside the JSON object.`;
+
+                const data = await callGemini(prompt, true);
+                displayResults(data.careers);
+            } catch (error) { displayError(error.message); }
+        }
+        
+        function displayResults(careers) {
+            loadingScreen.style.display = 'none';
+            resultsScreen.style.display = 'block';
+            resultsContainer.innerHTML = '';
+
+            if (!careers || careers.length === 0) {
+                displayError("Could not generate career paths based on your input. Please try again with different keywords.");
+                return;
+            }
+
+            careers.forEach(career => {
+                const card = document.createElement('div');
+                card.className = 'career-result-card';
+
+                const keySkillsHTML = career.keySkills.map(skill => `<span class="bg-indigo-100 text-indigo-800 text-xs font-medium mr-2 mb-2 px-2.5 py-0.5 rounded-full">${skill}</span>`).join('');
+
+                card.innerHTML = `
+                    <div class="p-6 bg-gray-50 border-b border-gray-200">
+                        <h2 class="font-montserrat text-2xl font-bold text-gray-800">${career.careerTitle}</h2>
+                        <p class="text-gray-500 italic mt-1">${career.description}</p>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-700 mb-2">Why It Fits You</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">${career.whyItFits}</p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-700 mb-2">A Day in the Life</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">${career.dayInTheLife}</p>
+                        </div>
+                        <div class="md:col-span-2">
+                            <h3 class="font-semibold text-lg text-gray-700 mb-2">Key Info</h3>
+                            <div class="flex flex-wrap items-start gap-4 text-sm">
+                                <div class="flex items-center gap-2"><svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg> <div><strong>Outlook:</strong> ${career.futureOutlook}</div></div>
+                                <div class="flex items-center gap-2"><svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01"></path></svg> <div><strong>Salary:</strong> ${career.averageSalaryRange}</div></div>
+                                <div class="flex items-center gap-2"><svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-5.747-6.996h11.494"></path></svg> <div><strong>Education:</strong> ${career.requiredEducation}</div></div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <h3 class="font-semibold text-lg text-gray-700 mb-2">Core Skills</h3>
+                            <div class="flex flex-wrap">${keySkillsHTML}</div>
+                        </div>
+                        <div class="md:col-span-2 space-y-2 additional-actions" data-career-title="${career.careerTitle}">
+                            <button class="secondary-button font-semibold py-2 px-4 rounded-lg w-full text-sm skill-gap-btn">Analyze My Skill Gaps</button>
+                            <div class="skill-gap-content hidden p-4 bg-indigo-50 rounded-lg"></div>
+                        </div>
+                    </div>
+                `;
+                resultsContainer.appendChild(card);
+            });
+            
+            document.querySelectorAll('.skill-gap-btn').forEach(btn => {
+                btn.addEventListener('click', handleSkillGapAnalysis);
+            });
+        }
+
+        async function handleSkillGapAnalysis(e) {
+            const button = e.target;
+            const container = button.nextElementSibling;
+            const careerTitle = button.parentElement.dataset.careerTitle;
+            
+            container.classList.remove('hidden');
+            container.innerHTML = `<div class="flex justify-center items-center p-4"><div class="small-loader"></div></div>`;
+            button.disabled = true;
+
+            try {
+                const prompt = `You are an expert career counselor. For the career of "${careerTitle}", analyze the user's skills ("${initialData.skills}") against typical requirements. Respond ONLY with a valid JSON object. The object must have these exact keys: "strengths" (a string paragraph), "areasForDevelopment" (a string paragraph), and "suggestedResources" (an array of strings). Do not include any other text, markdown, or explanations.`;
+                const data = await callGemini(prompt, true);
+
+                if (data && data.strengths && data.areasForDevelopment && Array.isArray(data.suggestedResources)) {
+                    const resourcesHTML = data.suggestedResources.map(r => `<li class="text-sm">${r}</li>`).join('');
+                    container.innerHTML = `
+                        <h4 class="font-semibold text-md text-gray-800">Your Strengths</h4>
+                        <p class="text-gray-600 text-sm mb-3">${data.strengths}</p>
+                        <h4 class="font-semibold text-md text-gray-800">Areas for Development</h4>
+                        <p class="text-gray-600 text-sm mb-3">${data.areasForDevelopment}</p>
+                        <h4 class="font-semibold text-md text-gray-800">Suggested Resources</h4>
+                        <ul class="list-disc list-inside text-gray-600 pl-2">${resourcesHTML}</ul>
+                    `;
+                } else {
+                    throw new Error("Received incomplete data from the AI.");
+                }
+            } catch(error) { 
+                container.innerHTML = `<p class="text-red-600 text-sm">Could not analyze skills. ${error.message}</p>`;
+            }
+        }
+
+        async function callGemini(prompt, expectJson = false) {
+const apiUrl = `/.netlify/functions/gemini-proxy`; 
+            const payload = {pageIdentifier: 'pathFinder', contents: [{ role: "user", parts: [{ text: prompt }] }] };
+            if (expectJson) { payload.generationConfig = { responseMimeType: "application/json" }; }
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) { const errorBody = await response.text(); console.error("API Error Response:", errorBody); throw new Error(`API Error: ${response.statusText}`); }
+            const result = await response.json();
+            if (!result.candidates || result.candidates.length === 0 || !result.candidates[0].content || !result.candidates[0].content.parts || result.candidates[0].content.parts.length === 0) { throw new Error("Received an incomplete response from API."); }
+            let text = result.candidates[0].content.parts[0].text;
+            if (expectJson) { const jsonMatch = text.match(/```(?:json)?([\s\S]*?)```/); if (jsonMatch && jsonMatch[1]) { text = jsonMatch[1]; } try { return JSON.parse(text); } catch (e) { console.error("Failed to parse JSON:", text); throw new Error("The AI returned data in an invalid format."); } }
+            return text;
+        }
+
+        function displayError(message) { loadingScreen.style.display = 'none'; resultsScreen.style.display = 'block'; resultsContainer.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-md text-center col-span-full"><h2 class="font-montserrat text-2xl font-bold text-red-600">An Error Occurred</h2><p class="text-gray-600 mt-2">${message}</p></div>`; }
+        function resetView() { resultsScreen.style.display = 'none'; inputScreen.style.display = 'block'; form.reset(); }
+    </script>
+</body>
+</html>

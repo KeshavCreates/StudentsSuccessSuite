@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debate Lab v2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #374151;
+            background-color: #f0f4f8; /* Light blue-gray background */
+        }
+        
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .font-montserrat {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .form-input {
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus {
+            border-color: #4338ca;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+            background-color: #fff;
+        }
+
+        .primary-button {
+            background-color: #4f46e5;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
+        }
+        .primary-button:hover {
+            background-color: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+        }
+        
+        .argument-card {
+            background-color: #fff;
+            border-left: 4px solid;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: fadeIn 0.5s ease-in-out forwards;
+            opacity: 0;
+        }
+        .argument-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .for-card { border-color: #16a34a; }
+        .against-card { border-color: #dc2626; }
+        
+        .info-card {
+            background: white;
+            animation: fadeIn 0.5s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e0e7ff;
+            border-top-color: #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    <div id="app-container" class="main-container min-h-screen flex items-center justify-center p-4 sm:p-8">
+        
+        <div id="input-screen" class="w-full max-w-2xl">
+            <div class="form-card p-8 rounded-2xl shadow-2xl">
+                <div class="text-center">
+                    <h1 class="font-montserrat text-4xl md:text-5xl font-extrabold text-gray-800 mb-2">Debate Lab</h1>
+                    <p class="text-gray-500 text-lg mb-8">Explore every side of an argument.</p>
+                </div>
+                <form id="debate-form" class="space-y-4">
+                    <div>
+                        <label for="topic" class="block text-lg font-semibold text-gray-700 mb-2">Enter a Debate Topic</label>
+                        <input type="text" id="topic" required class="form-input w-full p-3 rounded-lg text-lg" placeholder="e.g., Should AI be regulated?">
+                    </div>
+                    <button type="submit" class="primary-button w-full p-3 rounded-lg font-bold text-white text-xl shadow-md">
+                        Analyze Topic
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="loading-screen" class="hidden text-center">
+            <div class="loader mx-auto"></div>
+            <p class="text-xl text-gray-600 mt-6">Building the arguments...</p>
+        </div>
+
+        <div id="results-screen" class="hidden w-full max-w-6xl">
+             <div class="text-center mb-12" style="animation: fadeIn 0.5s ease forwards;">
+                <h2 class="font-montserrat text-3xl md:text-4xl font-extrabold text-gray-800">The Anatomy of the Argument</h2>
+                <p id="results-topic" class="text-gray-500 text-xl mt-1"></p>
+             </div>
+             
+             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <div>
+                    <h3 class="text-2xl font-bold text-green-600 mb-4 text-center">Arguments For</h3>
+                    <div id="for-container" class="space-y-4"></div>
+                </div>
+                 <div>
+                    <h3 class="text-2xl font-bold text-red-600 mb-4 text-center">Arguments Against</h3>
+                    <div id="against-container" class="space-y-4"></div>
+                </div>
+             </div>
+
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="info-card p-6 rounded-lg shadow-lg" style="animation-delay: 0.2s;">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Key Thinkers & Viewpoints</h3>
+                    <div id="thinkers-container" class="space-y-3 text-gray-600"></div>
+                </div>
+                 <div class="info-card p-6 rounded-lg shadow-lg" style="animation-delay: 0.3s;">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Finding the Middle Ground</h3>
+                    <p id="middle-ground-container" class="text-gray-600 leading-relaxed"></p>
+                </div>
+             </div>
+             
+             <div class="info-card p-6 rounded-lg shadow-xl" style="animation-delay: 0.4s;">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Logical Fallacy Detector</h3>
+                <p class="text-gray-500 mb-4">Paste an argument below to check it for common logical errors.</p>
+                <textarea id="fallacy-input" class="form-input w-full p-3 rounded-lg" rows="4" placeholder="e.g., Everyone agrees with this, so it must be true."></textarea>
+                <button id="fallacy-check-btn" class="primary-button mt-2 px-6 py-2 rounded-lg font-bold text-white shadow-md">Check for Fallacies</button>
+                <div id="fallacy-result-container" class="mt-4"></div>
+             </div>
+
+             <button id="reset-button" class="bg-gray-200 hover:bg-gray-300 w-full md:w-auto mt-12 p-3 px-8 rounded-lg font-bold text-lg text-gray-700 mx-auto block">
+                Analyze Another Topic
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- Animated Background ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: null, y: null };
+        window.addEventListener('mousemove', event => { mouse.x = event.x; mouse.y = event.y; });
+        window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
+        class Particle { constructor(x, y, dX, dY, s, c) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=s; this.color=c; } draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false); ctx.fillStyle=this.color; ctx.fill(); } update() { if(this.x>canvas.width||this.x<0){this.directionX=-this.directionX;} if(this.y>canvas.height||this.y<0){this.directionY=-this.directionY;} this.x+=this.directionX; this.y+=this.directionY; this.draw();}}
+        function connect() { let opacityValue=1; for(let a=0;a<particles.length;a++){for(let b=a;b<particles.length;b++){let distance=Math.pow(particles[a].x-particles[b].x,2)+Math.pow(particles[a].y-particles[b].y,2); if(distance<(canvas.width/7)*(canvas.height/7)){opacityValue=1-(distance/20000); ctx.strokeStyle='rgba(79, 70, 229,'+opacityValue+')'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(particles[a].x,particles[a].y); ctx.lineTo(particles[b].x,particles[b].y); ctx.stroke();}}}}
+        function initParticles() { particles = []; let num = (canvas.height * canvas.width) / 12000; for (let i=0; i<num; i++) { let s=(Math.random()*2)+1; let x=Math.random()*(innerWidth-s*2); let y=Math.random()*(innerHeight-s*2); let dX=(Math.random()*0.4)-0.2; let dY=(Math.random()*0.4)-0.2; particles.push(new Particle(x,y,dX,dY,s,'rgba(79, 70, 229, 0.5)'));}}
+        function animateBg() { requestAnimationFrame(animateBg); ctx.clearRect(0,0,innerWidth,innerHeight); for (let i=0; i<particles.length; i++) { particles[i].update(); } connect(); }
+        function resizeCanvas() { canvas.width=window.innerWidth; canvas.height=window.innerHeight; initParticles();}
+        window.addEventListener('resize', resizeCanvas); resizeCanvas(); animateBg();
+        
+        // --- DOM Elements ---
+        const appContainer = document.getElementById('app-container');
+        const form = document.getElementById('debate-form');
+        const inputScreen = document.getElementById('input-screen');
+        const loadingScreen = document.getElementById('loading-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const resetButton = document.getElementById('reset-button');
+        const topicInput = document.getElementById('topic');
+        const resultsTopic = document.getElementById('results-topic');
+        const forContainer = document.getElementById('for-container');
+        const againstContainer = document.getElementById('against-container');
+        const thinkersContainer = document.getElementById('thinkers-container');
+        const middleGroundContainer = document.getElementById('middle-ground-container');
+        const fallacyInput = document.getElementById('fallacy-input');
+        const fallacyCheckBtn = document.getElementById('fallacy-check-btn');
+        const fallacyResultContainer = document.getElementById('fallacy-result-container');
+
+        // --- Event Listeners ---
+        form.addEventListener('submit', handleFormSubmit);
+        resetButton.addEventListener('click', resetView);
+        fallacyCheckBtn.addEventListener('click', handleFallacyCheck);
+        
+        // --- Main Logic ---
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const topic = topicInput.value.trim();
+            if (!topic) { alert('Please enter a topic.'); return; }
+
+            appContainer.classList.remove('items-center');
+            inputScreen.style.display = 'none';
+            loadingScreen.style.display = 'block';
+            resultsScreen.style.display = 'none';
+
+            try {
+                const prompt = `Act as a neutral, expert logician. For the debate topic "${topic}", provide a balanced analysis. Respond ONLY with a valid JSON object. It must have these keys: "argumentsFor" (an array of strings), "argumentsAgainst" (an array of strings), "keyThinkers" (an array of objects with "name" and "viewpoint" keys), and "middleGround" (a string paragraph).`;
+                const data = await callGemini(prompt, true);
+                displayResults(topic, data);
+            } catch (error) {
+                displayError(error.message);
+            }
+        }
+
+        function displayResults(topic, data) {
+            loadingScreen.style.display = 'none';
+            resultsScreen.style.display = 'block';
+            resultsTopic.textContent = `On the topic of: "${topic}"`;
+
+            forContainer.innerHTML = data.argumentsFor.map((arg, i) => createArgumentCard(arg, 'for', i * 0.1)).join('');
+            againstContainer.innerHTML = data.argumentsAgainst.map((arg, i) => createArgumentCard(arg, 'against', i * 0.1)).join('');
+            thinkersContainer.innerHTML = data.keyThinkers.map(t => `<p><strong>${t.name}:</strong> ${t.viewpoint}</p>`).join('');
+            middleGroundContainer.textContent = data.middleGround;
+            fallacyResultContainer.innerHTML = '';
+            fallacyInput.value = '';
+        }
+        
+        function createArgumentCard(text, type, delay) {
+            return `<div class="argument-card p-4 rounded-lg shadow-sm ${type === 'for' ? 'for-card' : 'against-card'}" style="animation-delay: ${delay}s;"><p>${text}</p></div>`;
+        }
+
+        async function handleFallacyCheck() {
+            const argument = fallacyInput.value.trim();
+            if (!argument) { alert("Please enter an argument to check."); return; }
+
+            fallacyResultContainer.innerHTML = `<div class="flex justify-center p-4"><div class="loader !w-8 !h-8 !border-4"></div></div>`;
+            
+            try {
+                const prompt = `Act as a critical thinking tutor. Analyze this text for logical fallacies: "${argument}". Respond ONLY with a valid JSON object. The object must have a key "analysis". If a fallacy is found, "analysis" should be an object with "fallacyName" and "explanation" keys. If not, "analysis" should have a "conclusion" key with the value "No clear logical fallacies were identified."`;
+                const data = await callGemini(prompt, true);
+
+                if (data.analysis.conclusion) {
+                    fallacyResultContainer.innerHTML = `<div class="p-4 rounded-lg bg-green-100 text-green-800">${data.analysis.conclusion}</div>`;
+                } else if (data.analysis.fallacyName) {
+                    fallacyResultContainer.innerHTML = `
+                        <div class="p-4 rounded-lg bg-yellow-100 text-yellow-800">
+                            <h4 class="font-bold">Potential Fallacy Detected: ${data.analysis.fallacyName}</h4>
+                            <p>${data.analysis.explanation}</p>
+                        </div>
+                    `;
+                } else {
+                     throw new Error("The AI returned an unexpected format.");
+                }
+            } catch (error) {
+                fallacyResultContainer.innerHTML = `<div class="p-4 rounded-lg bg-red-100 text-red-800">${error.message}</div>`;
+            }
+        }
+
+        // --- Utility Functions ---
+        async function callGemini(prompt, expectJson = false) {
+const apiUrl = `/.netlify/functions/gemini-proxy`; 
+            const payload = { pageIdentifier: 'debate',contents: [{ role: "user", parts: [{ text: prompt }] }] };
+            if (expectJson) { payload.generationConfig = { responseMimeType: "application/json" }; }
+            
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) { throw new Error(`API Error: ${response.statusText}`); }
+            
+            const result = await response.json();
+            if (!result.candidates || result.candidates.length === 0) { throw new Error("Received an incomplete response from the API."); }
+            
+            let text = result.candidates[0].content.parts[0].text;
+            if (expectJson) {
+                try { return JSON.parse(text); } 
+                catch (e) { console.error("JSON Parse Error:", e, "Raw text:", text); throw new Error("The AI returned data in an invalid format."); }
+            }
+            return text;
+        }
+
+        function displayError(message) {
+            loadingScreen.style.display = 'none';
+            appContainer.classList.add('items-center');
+            inputScreen.style.display = 'block';
+            alert(`An error occurred: ${message}`);
+        }
+
+        function resetView() {
+            resultsScreen.style.display = 'none';
+            appContainer.classList.add('items-center');
+            inputScreen.style.display = 'block';
+            form.reset();
+        }
+    </script>
+</body>
+</html>
