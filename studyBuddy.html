@@ -9,114 +9,42 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            color: #1f2937;
-            background-color: #f9fafb;
-        }
-
-        .main-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-        }
-
-        .form-textarea {
-            background-color: #f9fafb;
-            border: 1px solid #d1d5db;
-            transition: all 0.2s ease-in-out;
-        }
-        .form-textarea:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-            background-color: #fff;
-        }
-
-        .action-button {
-            background-color: #eef2ff;
-            color: #3730a3;
-            transition: all 0.2s ease-in-out;
-        }
-        .action-button:hover:not(:disabled) {
-             background-color: #e0e7ff;
-             transform: translateY(-1px);
-        }
-        .action-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .clear-button {
-            background-color: #fee2e2;
-            color: #b91c1c;
-        }
-        .clear-button:hover {
-            background-color: #fecaca;
-        }
-
-        .result-box {
-            background-color: #f9fafb;
-            border: 1px dashed #d1d5db;
-            animation: fadeIn 0.5s ease-in-out forwards;
-            opacity: 0;
-        }
-        
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #dbeafe;
-            border-top-color: #2563eb;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+        body { font-family: 'Inter', sans-serif; color: #1f2937; background-color: #f9fafb; }
+        .main-card { background: white; border: 1px solid #e5e7eb; }
+        .form-textarea { background-color: #f9fafb; border: 1px solid #d1d5db; transition: all 0.2s ease-in-out; }
+        .form-textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); background-color: #fff; }
+        .action-button { background-color: #eef2ff; color: #3730a3; transition: all 0.2s ease-in-out; }
+        .action-button:hover:not(:disabled) { background-color: #e0e7ff; transform: translateY(-1px); }
+        .action-button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .clear-button { background-color: #fee2e2; color: #b91c1c; }
+        .clear-button:hover { background-color: #fecaca; }
+        .result-box { background-color: #f9fafb; border: 1px dashed #d1d5db; animation: fadeIn 0.5s ease-in-out forwards; opacity: 0; }
+        .loader { width: 40px; height: 40px; border: 4px solid #dbeafe; border-top-color: #2563eb; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div class="max-w-4xl mx-auto p-4 sm:p-8">
-        
         <div class="main-card p-8 rounded-xl shadow-lg">
             <div class="text-center">
                 <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Study Buddy</h1>
                 <p class="text-gray-500 text-lg mb-8">Your personal AI-powered learning assistant.</p>
             </div>
-            
             <div>
                 <label for="study-text" class="block text-lg font-semibold text-gray-700 mb-2">Paste your study material here</label>
                 <textarea id="study-text" class="form-textarea w-full p-4 rounded-lg text-base" rows="12" placeholder="Paste a complex paragraph or section from an article, textbook, or website..."></textarea>
-                <div class="flex justify-end mt-2">
-                    <button id="clear-btn" class="clear-button font-semibold py-1 px-3 rounded-lg text-sm flex items-center justify-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        Clear Text
-                    </button>
-                </div>
+                <div class="flex justify-end mt-2"><button id="clear-btn" class="clear-button font-semibold py-1 px-3 rounded-lg text-sm flex items-center justify-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>Clear Text</button></div>
             </div>
-
             <div id="action-buttons" class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <button id="explain-btn" class="action-button font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Explain Simply
-                </button>
-                <button id="analogy-btn" class="action-button font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                    Generate Analogy
-                </button>
-                <button id="quiz-btn" class="action-button font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                    Create a Quiz
-                </button>
+                <button id="explain-btn" class="action-button font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Explain Simply</button>
+                <button id="analogy-btn" class="action-button font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>Generate Analogy</button>
+                <button id="quiz-btn" class="action-button font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>Create a Quiz</button>
             </div>
-
             <div id="result-container" class="mt-8"></div>
         </div>
     </div>
-
     <script>
-        // --- DOM Elements ---
         const studyText = document.getElementById('study-text');
         const explainBtn = document.getElementById('explain-btn');
         const analogyBtn = document.getElementById('analogy-btn');
@@ -125,20 +53,14 @@
         const resultContainer = document.getElementById('result-container');
         const actionButtons = document.getElementById('action-buttons');
 
-        // --- Event Listeners ---
         explainBtn.addEventListener('click', handleExplainSimply);
         analogyBtn.addEventListener('click', handleGenerateAnalogy);
         quizBtn.addEventListener('click', handleCreateQuiz);
-        clearBtn.addEventListener('click', () => {
-            studyText.value = '';
-            resultContainer.innerHTML = '';
-        });
+        clearBtn.addEventListener('click', () => { studyText.value = ''; resultContainer.innerHTML = ''; });
         
-        // --- Handlers ---
         async function handleExplainSimply() {
             const text = studyText.value.trim();
             if (!text) { alert('Please paste some text to study first.'); return; }
-            
             const prompt = `Act as an expert tutor. Explain the following text in a clear, structured, and easy-to-digest way for a university student. Break down the core components and define key terms. Text: "${text}"`;
             generateResult('Explanation', prompt);
         }
@@ -146,7 +68,6 @@
         async function handleGenerateAnalogy() {
             const text = studyText.value.trim();
             if (!text) { alert('Please paste some text to study first.'); return; }
-
             const prompt = `Act as a creative teacher. Read the following text and generate an insightful and clever analogy to help a university student understand the main concept. Explain how the parts of the analogy relate to the concept. Text: "${text}"`;
             generateResult('Analogy', prompt);
         }
@@ -154,7 +75,6 @@
         async function handleCreateQuiz() {
             const text = studyText.value.trim();
             if (!text) { alert('Please paste some text to study first.'); return; }
-
             const prompt = `Act as a teacher creating a comprehensive study guide. Based on the following text, create a quiz with 10 multiple-choice questions to test understanding. Respond ONLY with a valid JSON object with a key "quiz", which is an array of objects. Each object must have "question", "options" (an array of 4 strings), and "answer" (the correct string from options) keys. Text: "${text}"`;
             generateResult('Quiz', prompt, true);
         }
@@ -162,14 +82,10 @@
         async function generateResult(title, prompt, isJson = false) {
             setLoading(true);
             resultContainer.innerHTML = `<div class="result-box p-6"><h2 class="text-2xl font-bold mb-4">${title}</h2><div class="flex justify-center items-center p-8"><div class="loader"></div></div></div>`;
-
             try {
                 const data = await callGemini(prompt, isJson);
-                if (isJson) {
-                    displayQuiz(title, data.quiz);
-                } else {
-                    displaySimpleResult(title, data);
-                }
+                if (isJson) { displayQuiz(title, data.quiz); }
+                else { displaySimpleResult(title, data); }
             } catch (error) {
                 displayError(title, error.message);
             } finally {
@@ -177,38 +93,15 @@
             }
         }
 
-        // --- Display Functions ---
         function displaySimpleResult(title, text) {
             const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
             resultContainer.innerHTML = `<div class="result-box p-6"><h2 class="text-2xl font-bold mb-4">${title}</h2><p class="text-gray-600 leading-relaxed">${formattedText}</p></div>`;
         }
 
         function displayQuiz(title, questions) {
-            if (!questions || questions.length === 0) {
-                displayError(title, "The AI couldn't generate a quiz from the provided text. Please try with a more detailed text.");
-                return;
-            }
-            const quizHTML = `
-                <form id="quiz-form">
-                    ${questions.map((q, i) => `
-                        <div class="mb-6">
-                            <p class="font-semibold mb-2">${i + 1}. ${q.question}</p>
-                            <div class="space-y-2">
-                                ${q.options.map(option => `
-                                    <label class="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
-                                        <input type="radio" name="question-${i}" value="${option}" class="mr-3 text-blue-600 focus:ring-blue-500">
-                                        <span>${option}</span>
-                                    </label>
-                                `).join('')}
-                            </div>
-                            <p data-answer="${q.answer}" class="hidden mt-2 text-sm"></p>
-                        </div>
-                    `).join('')}
-                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">Check Answers</button>
-                </form>
-            `;
+            if (!questions || questions.length === 0) { displayError(title, "The AI couldn't generate a quiz from the provided text. Please try with a more detailed text."); return; }
+            const quizHTML = `<form id="quiz-form">${questions.map((q, i) => `<div class="mb-6"><p class="font-semibold mb-2">${i + 1}. ${q.question}</p><div class="space-y-2">${q.options.map(option => `<label class="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer"><input type="radio" name="question-${i}" value="${option}" class="mr-3 text-blue-600 focus:ring-blue-500"><span>${option}</span></label>`).join('')}</div><p data-answer="${q.answer}" class="hidden mt-2 text-sm"></p></div>`).join('')}<button type="submit" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">Check Answers</button></form>`;
             resultContainer.innerHTML = `<div class="result-box p-6"><h2 class="text-2xl font-bold mb-4">${title}</h2>${quizHTML}</div>`;
-            
             document.getElementById('quiz-form').addEventListener('submit', checkQuizAnswers);
         }
 
@@ -216,50 +109,57 @@
             e.preventDefault();
             const form = e.target;
             const questions = form.querySelectorAll('[data-answer]');
-            
             questions.forEach((q, i) => {
                 const selected = form.querySelector(`input[name="question-${i}"]:checked`);
                 const correctAnswer = q.dataset.answer;
                 const resultP = q;
                 resultP.classList.remove('hidden');
-
-                if (selected && selected.value === correctAnswer) {
-                    resultP.textContent = '✅ Correct!';
-                    resultP.className = 'mt-2 text-sm font-bold text-green-600';
-                } else {
-                    resultP.textContent = `❌ Incorrect. The correct answer is: ${correctAnswer}`;
-                    resultP.className = 'mt-2 text-sm font-bold text-red-600';
-                }
+                if (selected && selected.value === correctAnswer) { resultP.textContent = '✅ Correct!'; resultP.className = 'mt-2 text-sm font-bold text-green-600'; }
+                else { resultP.textContent = `❌ Incorrect. The correct answer is: ${correctAnswer}`; resultP.className = 'mt-2 text-sm font-bold text-red-600'; }
             });
-            e.target.querySelector('button').style.display = 'none'; // Hide button after checking
+            e.target.querySelector('button').style.display = 'none';
         }
 
         function displayError(title, message) {
             resultContainer.innerHTML = `<div class="result-box p-6"><h2 class="text-2xl font-bold mb-4">${title}</h2><p class="text-red-600">${message}</p></div>`;
         }
 
-        // --- Utility Functions ---
-        function setLoading(isLoading) {
-            Array.from(actionButtons.children).forEach(button => {
-                button.disabled = isLoading;
-            });
-        }
+        function setLoading(isLoading) { Array.from(actionButtons.children).forEach(button => { button.disabled = isLoading; }); }
 
-        async function callGemini(prompt, expectJson = false) {
-const apiUrl = `/.netlify/functions/gemini-proxy`; 
-            const payload = {pageIdentifier: 'studyBuddy', contents: [{ role: "user", parts: [{ text: prompt }] }] };
-            if (expectJson) { payload.generationConfig = { responseMimeType: "application/json" }; }
+        async function callGemini(prompt, expectJson = false, history = []) {
+            const apiUrl = `/.netlify/functions/gemini-proxy`;
+            const payload = {
+                pageIdentifier: 'studyBuddy',
+                prompt: prompt,
+                expectJson: expectJson,
+                history: history
+            };
             
-            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            if (!response.ok) { throw new Error(`API Error: ${response.statusText}`); }
-            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("API Error Response:", errorText);
+                throw new Error(`API Error: ${response.statusText}`);
+            }
+
             const result = await response.json();
-            if (!result.candidates || result.candidates.length === 0) { throw new Error("Received an incomplete response from the API."); }
+            if (!result.candidates || result.candidates.length === 0) {
+                throw new Error("Received an incomplete response from the API.");
+            }
             
             let text = result.candidates[0].content.parts[0].text;
             if (expectJson) {
-                try { return JSON.parse(text); } 
-                catch (e) { console.error("JSON Parse Error:", e, "Raw text:", text); throw new Error("The AI returned data in an invalid format."); }
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error("Failed to parse JSON:", text);
+                    throw new Error("The AI returned data in an invalid format.");
+                }
             }
             return text;
         }
