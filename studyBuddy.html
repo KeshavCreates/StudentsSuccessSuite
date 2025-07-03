@@ -61,7 +61,8 @@
         async function handleExplainSimply() {
             const text = studyText.value.trim();
             if (!text) { alert('Please paste some text to study first.'); return; }
-            const prompt = `Act as an expert tutor. Explain the following text in a clear, structured, and easy-to-digest way for a university student. Break down the core components and define key terms. Text: "${text}"`;
+            // *** MODIFIED PROMPT ***
+            const prompt = `Act as an expert tutor. Explain the following text simply, in three key bullet points. Identify the main idea first. Text: "${text}"`;
             generateResult('Explanation', prompt);
         }
 
