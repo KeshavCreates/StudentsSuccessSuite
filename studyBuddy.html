@@ -62,7 +62,7 @@
             const text = studyText.value.trim();
             if (!text) { alert('Please paste some text to study first.'); return; }
             // *** MODIFIED PROMPT ***
-            const prompt = `Act as an expert tutor. Explain the following text simply, in three key bullet points. Identify the main idea first. Text: "${text}"`;
+            const prompt = `Act as an expert tutor. First, provide a clear, one-paragraph summary of the following text. Then, list and define the most important key terms from the text. Text: "${text}"`;
             generateResult('Explanation', prompt);
         }
 
