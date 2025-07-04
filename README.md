@@ -4,7 +4,7 @@ An all-in-one AI toolkit designed to help you excel in your studies and prepare 
 
 ## 🌐 Live Demo
 
-**https://studentsuccesssuite.netlify.app/(#)** <!-- Replace # with actual demo link -->
+**https://studentsuccesssuite.netlify.app/** <!-- Replace # with actual demo link -->
 
 ## ✨ Features
 
