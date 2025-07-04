@@ -181,7 +181,6 @@
 
         // --- Initialization ---
         function initialize() {
-            // *** MODIFICATION START ***
             // Render the "Other" card FIRST
             const otherCard = document.createElement('div');
             otherCard.id = 'other-card';
@@ -201,7 +200,6 @@
                 const card = createFigureCard(figure);
                 figuresGrid.appendChild(card);
             });
-            // *** MODIFICATION END ***
 
 
             backBtn.addEventListener('click', () => {
@@ -312,7 +310,13 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = `chat-bubble max-w-lg p-3 rounded-lg mb-4 ${sender === 'user' ? 'user-bubble ml-auto' : 'ai-bubble mr-auto'}`;
             
-            const formattedText = text.replace(/\[context\](.*?)\[\/context\]/g, '<span class="context-link" data-term="$1">$1</span>');
+            // *** MODIFICATION START ***
+            let formattedText = text.replace(/\[context\](.*?)\[\/context\]/g, '<span class="context-link" data-term="$1">$1</span>');
+            // Convert Markdown bold (**) and italics (*) to HTML tags
+            formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formattedText = formattedText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            // *** MODIFICATION END ***
+            
             messageDiv.innerHTML = formattedText;
             
             chatWindow.appendChild(messageDiv);
